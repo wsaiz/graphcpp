@@ -1,0 +1,15 @@
+Directed
+A B 6
+A C 2
+C B 3
+B D 4
+B B 3
+C D 6
+D E 1
+E F 1
+F G 2
+G H 4
+G I 5
+H I 4
+I J 2
+J A 6
