@@ -1,10 +1,16 @@
 ﻿  Menu.cpp
-C:\Users\wsaiz\source\repos\graph\graph\Graph.h(235,23): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(263,23): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  (компиляция исходного файла "Menu.cpp")
+  
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(404,36): warning C4267: +=: преобразование из "size_t" в "int"; возможна потеря данных
   (компиляция исходного файла "Menu.cpp")
   
   graph.cpp
-C:\Users\wsaiz\source\repos\graph\graph\Graph.h(235,23): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(263,23): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  (компиляция исходного файла "graph.cpp")
+  
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(404,36): warning C4267: +=: преобразование из "size_t" в "int"; возможна потеря данных
   (компиляция исходного файла "graph.cpp")
   
   Создание кода...
-  graph.vcxproj -> C:\Users\wsaiz\source\repos\graph\x64\Debug\graph.exe
+  graph.vcxproj -> C:\Users\wsaiz\Documents\GitHub\graphcpp\x64\Debug\graph.exe

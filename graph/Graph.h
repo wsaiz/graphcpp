@@ -34,8 +34,24 @@ public:
         }
 
         string type;
-        file >> type;
-        directed = (type == "Directed");
+        // Используем std::getline для считывания типа графа
+        if (!getline(file, type)) {
+            throw runtime_error("Ошибка чтения типа графа из файла!");
+        }
+
+        // Удаляем лишние пробелы
+        type.erase(remove_if(type.begin(), type.end(), ::isspace), type.end());
+
+        // Проверяем тип графа
+        if (type == "Directed") {
+            directed = true;
+        }
+        else if (type == "Undirected") {
+            directed = false;
+        }
+        else {
+            throw runtime_error("Некорректный тип графа в файле: " + type);
+        }
 
         string from, to;
         int weight;
@@ -44,6 +60,7 @@ public:
         adjList.clear();
         numVertices = 0;
 
+        // Читаем рёбра
         while (file >> from >> to >> weight) {
             addEdge(from, to, weight);
         }
@@ -136,7 +153,18 @@ public:
         }
         int u = nameToIndex[from]; //получаем индексы вершин
         int v = nameToIndex[to];
+        bool edgeExists = false;
+        for (const Edge& edge : adjList[u]) {
+            if (edge.to == v) {
+                edgeExists = true;
+                break;
+            }
+        }
 
+        if (!edgeExists) {
+            cout << "Ребро между " << from << " и " << to << " не существует." << endl;
+            return;
+        }
         adjList[u].erase(remove_if(adjList[u].begin(), adjList[u].end(), //удаление ребра из списка смежности вершины u (from) 
             [v](const Edge& edge) { return edge.to == v; }),
             adjList[u].end());
@@ -246,6 +274,166 @@ public:
             }
         }
         return reversedGraph;  
+    }
+    bool edgeExists(const string& from, const string& to) {
+        if (nameToIndex.find(from) == nameToIndex.end() || nameToIndex.find(to) == nameToIndex.end()) {
+            return false; //если одна из вершин не существует, ребро не может существовать
+        }
+
+        int u = nameToIndex[from]; 
+        int v = nameToIndex[to];   
+
+        //если ребро есть в списке смежности
+        for (const Edge& edge : adjList[u]) {
+            if (edge.to == v) {
+                return true; //ребро существует
+            }
+        }
+
+        return false; //ребро не существует
+    }
+    bool canDisconnectWithKEdges(const string& u, const string& v, int k) {
+        if (nameToIndex.find(u) == nameToIndex.end() || nameToIndex.find(v) == nameToIndex.end()) { //проверка на существование вершин
+            cout << "Одна или обе вершины не существуют!" << endl;
+            return false;
+        }
+        if (!edgeExists(u, v)) {
+            cout << "Ребро между " << u << " и " << v << " не существует." << endl;
+            return false;
+        }
+        int uIndex = nameToIndex[u];  //индексы вершины u и v
+        int vIndex = nameToIndex[v];  
+
+        //если не существует пути из u в v, то ничего искать не нужно
+        if (!hasPath(uIndex, vIndex)) {
+            cout << "Вершины " << u << " и " << v << " уже отключены." << endl;
+            return true;
+        }
+
+        //поиск критических ребер, которые разрывают связь между u и v 
+        vector<pair<int, int>> criticalEdges = findCriticalEdges(uIndex, vIndex);
+
+        //если количество критических рёбер меньше или равно k, можем разорвать путь
+        if (criticalEdges.size() == k) {
+            cout << "Можно отключить вершины " << u << " и " << v << " с помощью " << k
+                << " рёбер." << endl;
+            return true;
+        }
+        else {
+            cout << "Невозможно отключить вершины " << u << " и " << v << " с помощью " << k
+                << " рёбер." << endl;
+            return false;
+        }
+    }
+
+    //вспомогательная функция для поиска всех путей
+    bool hasPath(int u, int v) {
+        vector<bool> visited(numVertices, false); //вектор для отслеживания посещенных вершин
+        return dfs(u, v, visited);
+    }
+
+    //dfs для проверки существования пути
+    bool dfs(int u, int v, vector<bool>& visited) {
+        if (u == v) { //если текущая вершина целевая вершина
+            return true;
+        }
+        visited[u] = true; //отмечаем вершину, как посещенную
+
+        for (const Edge& edge : adjList[u]) { //перебираем всех соседей вершины
+            if (!visited[edge.to]) {
+                if (dfs(edge.to, v, visited)) { //рекурсивно вызываем метод для след. вершины
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    //поиск критических рёбер, удаление которых разорвёт путь
+    vector<pair<int, int>> findCriticalEdges(int u, int v) {
+        vector<pair<int, int>> criticalEdges; //список критических ребер
+
+        //применяю DFS для поиска всех путей и выявления критических рёбер
+        vector<bool> visited(numVertices, false);
+        dfsFindCriticalEdges(u, v, visited, criticalEdges);
+
+        return criticalEdges;
+    }
+    //dfs для критических ребер
+    void dfsFindCriticalEdges(int u, int v, vector<bool>& visited, vector<pair<int, int>>& criticalEdges) {
+        if (u == v) {
+            return;
+        }
+
+        visited[u] = true; //отмечаем, что вершина посещена
+
+        for (const Edge& edge : adjList[u]) {
+            if (!visited[edge.to]) {
+                
+                int to = edge.to;
+                visited[to] = true;
+
+                
+                if (!hasPathWithoutEdge(u, to, v)) { //проверяем является ли текущее ребро критическим
+                    criticalEdges.push_back(make_pair(u, to));
+                }
+
+                
+                dfsFindCriticalEdges(to, v, visited, criticalEdges); //продолжжаем обход в глубину
+
+                
+                visited[to] = false; //сбрасываем статус посещенной вершины
+            }
+        }
+
+        visited[u] = false; 
+    }
+
+
+    bool hasPathWithoutEdge(int from, int to, int v) {
+        vector<bool> visited(numVertices, false); //вектор для отслеживания посещенных вершин
+        visited[to] = true; //исключаем ребро с помощью метки
+        return dfs(from, v, visited); //запускаем dfs игнорируя это ребро
+    }
+
+    //метод для нахождения цикломатического числа графа
+    int findCyclomaticNumber() const {
+        int edgeCount = 0;
+        for (const auto& edges : adjList) { //подсчитываем кол-во ребер для каждой вершины
+            edgeCount += edges.size();
+        }
+        
+        if (!directed) { //для неориентированного графа (ребра делятся на два, т.к. они дважды записаны в список смежности)
+            edgeCount /= 2;
+        }
+
+        int componentCount = countConnectedComponents();
+        return edgeCount - numVertices + componentCount;
+    }
+
+    int countConnectedComponents() const { //метод для проверки посещенных вершин
+        vector<bool> visited(numVertices, false);
+        int componentCount = 0;
+
+        for (int i = 0; i < numVertices; ++i) {
+            if (!visited[i]) {
+                ++componentCount;
+                dfsForComponents(i, visited);
+            }
+        }
+
+        return componentCount;
+    }
+
+    //dfs для обхода всех вершин, которые связаны с начальной
+    void dfsForComponents(int vertex, vector<bool>& visited) const {
+        visited[vertex] = true; 
+        for (const Edge& edge : adjList[vertex]) {
+            if (!visited[edge.to]) {
+                dfsForComponents(edge.to, visited);
+            }
+        }
     }
 };
 
