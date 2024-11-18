@@ -32,8 +32,11 @@ void graphMenu(Graph& graph) {
         }
 
         cout << "12. Найти цикломатическое число графа \n";
-
-        cout << "13. Выйти \n";
+        cout << "13. Найти минимальное остовное дерево (алгоритм Прима) \n";
+        cout << "14. Найти кратчайший путь между двумя вершинами \n";
+        cout << "15. Проверить путь длиной не более L между двумя вершинами \n";
+        cout<< "16. Определить, есть ли в графе вершина, каждая из минимальных стоимостей пути от которой до остальных не превосходит N \n";
+        cout << "17. Выйти \n";
         cout << "Выберите опцию: ";
         while (!(cin >> option)) {
             cout << "Ошибка ввода! Пожалуйста, введите номер опции: ";
@@ -111,7 +114,7 @@ void graphMenu(Graph& graph) {
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
             }
-            graph.canDisconnectWithKEdges(from, to, k);
+            graph.canDisconnectWithKEdges(from, to, k, graph.isDirected());
             break;
 
         case 10:
@@ -139,8 +142,41 @@ void graphMenu(Graph& graph) {
         case 12:
             cout << "Цикломатическое число графа: " << graph.findCyclomaticNumber() << endl;
             break;
-
         case 13:
+            graph.findMinimumSpanningTree();
+            break;
+
+        case 14: 
+            cout << "Введите начальную вершину: ";
+            cin >> from;
+            cout << "Введите конечную вершину: ";
+            cin >> to;
+            graph.findShortestPathBellmanFord(from, to);
+            break;
+        case 15:
+            cout << "Введите начальную вершину: ";
+            cin >> from;
+            cout << "Введите конечную вершину: ";
+            cin >> to;
+            cout << "Введите максимальную длину пути (L): ";
+            while (!(cin >> k)) {
+                cout << "Ошибка ввода! Введите максимальную длину пути (int): ";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+
+            graph.findPathWithinL(from, to, k);
+            break;
+        case 16:
+            cout << "Введите N: ";
+            while (!(cin >> k)) {
+                cout << "Ошибка ввода! Введите максимальную длину пути (int): ";
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+            graph.getVerticesWithPathsBelowN(k);
+            break;
+        case 17:
             return;
 
         default:

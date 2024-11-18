@@ -1,4 +1,4 @@
-#ifndef GRAPH_H
+п»ї#ifndef GRAPH_H
 #define GRAPH_H
 #include <iostream>
 #include <vector>
@@ -8,41 +8,42 @@
 #include <unordered_map>
 #include <fstream>
 #include <unordered_set>
+#include <queue>
 using namespace std;
 struct Edge {
-    int to;        //конечная вершина
-    int weight;    //вес ребра
+    int to;        //РєРѕРЅРµС‡РЅР°СЏ РІРµСЂС€РёРЅР°
+    int weight;    //РІРµСЃ СЂРµР±СЂР°
     Edge(int to, int weight) : to(to), weight(weight) {}
 };
 class Graph {
 private:
-    int numVertices;                             //кол-во вершин
-    bool directed;                               //флаг ориентированного/неориетированного графа
-    vector<vector<Edge>> adjList;                //список смежности с весами
-    unordered_map<string, int> nameToIndex;      //хэш-таблица для сопоставления имени вершины с индексом
-    unordered_map<int, string> indexToName;      //хэш-таблица для сопоставления индекса вершины с именем
+    int numVertices;                             //РєРѕР»-РІРѕ РІРµСЂС€РёРЅ
+    bool directed;                               //С„Р»Р°Рі РѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅРѕРіРѕ/РЅРµРѕСЂРёРµС‚РёСЂРѕРІР°РЅРЅРѕРіРѕ РіСЂР°С„Р°
+    vector<vector<Edge>> adjList;                //СЃРїРёСЃРѕРє СЃРјРµР¶РЅРѕСЃС‚Рё СЃ РІРµСЃР°РјРё
+    unordered_map<string, int> nameToIndex;      //С…СЌС€-С‚Р°Р±Р»РёС†Р° РґР»СЏ СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёСЏ РёРјРµРЅРё РІРµСЂС€РёРЅС‹ СЃ РёРЅРґРµРєСЃРѕРј
+    unordered_map<int, string> indexToName;      //С…СЌС€-С‚Р°Р±Р»РёС†Р° РґР»СЏ СЃРѕРїРѕСЃС‚Р°РІР»РµРЅРёСЏ РёРЅРґРµРєСЃР° РІРµСЂС€РёРЅС‹ СЃ РёРјРµРЅРµРј
 
 public:
-    //конструктор по умолчанию, который создает пустой граф
+    //РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ, РєРѕС‚РѕСЂС‹Р№ СЃРѕР·РґР°РµС‚ РїСѓСЃС‚РѕР№ РіСЂР°С„
     Graph(bool directed = false) : numVertices(0), directed(directed) {}
 
-    //конструктор для загрузки графа из файла
+    //РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РґР»СЏ Р·Р°РіСЂСѓР·РєРё РіСЂР°С„Р° РёР· С„Р°Р№Р»Р°
     Graph(const string& filename) {
         ifstream file(filename);
         if (!file) {
-            throw runtime_error("Ошибка открытия файла для чтения!");  // Выбрасываем исключение
+            throw runtime_error("РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р° РґР»СЏ С‡С‚РµРЅРёСЏ!");  // Р’С‹Р±СЂР°СЃС‹РІР°РµРј РёСЃРєР»СЋС‡РµРЅРёРµ
         }
 
         string type;
-        // Используем std::getline для считывания типа графа
+        // РСЃРїРѕР»СЊР·СѓРµРј std::getline РґР»СЏ СЃС‡РёС‚С‹РІР°РЅРёСЏ С‚РёРїР° РіСЂР°С„Р°
         if (!getline(file, type)) {
-            throw runtime_error("Ошибка чтения типа графа из файла!");
+            throw runtime_error("РћС€РёР±РєР° С‡С‚РµРЅРёСЏ С‚РёРїР° РіСЂР°С„Р° РёР· С„Р°Р№Р»Р°!");
         }
 
-        // Удаляем лишние пробелы
+        // РЈРґР°Р»СЏРµРј Р»РёС€РЅРёРµ РїСЂРѕР±РµР»С‹
         type.erase(remove_if(type.begin(), type.end(), ::isspace), type.end());
 
-        // Проверяем тип графа
+        // РџСЂРѕРІРµСЂСЏРµРј С‚РёРї РіСЂР°С„Р°
         if (type == "Directed") {
             directed = true;
         }
@@ -50,7 +51,7 @@ public:
             directed = false;
         }
         else {
-            throw runtime_error("Некорректный тип графа в файле: " + type);
+            throw runtime_error("РќРµРєРѕСЂСЂРµРєС‚РЅС‹Р№ С‚РёРї РіСЂР°С„Р° РІ С„Р°Р№Р»Рµ: " + type);
         }
 
         string from, to;
@@ -60,13 +61,13 @@ public:
         adjList.clear();
         numVertices = 0;
 
-        // Читаем рёбра
+        // Р§РёС‚Р°РµРј СЂС‘Р±СЂР°
         while (file >> from >> to >> weight) {
             addEdge(from, to, weight);
         }
 
         file.close();
-        cout << "Граф загружен из файла " << filename << endl;
+        cout << "Р“СЂР°С„ Р·Р°РіСЂСѓР¶РµРЅ РёР· С„Р°Р№Р»Р° " << filename << endl;
     }
     Graph(const Graph& copy) {
         numVertices = copy.numVertices;
@@ -78,50 +79,50 @@ public:
     bool isDirected() const {
         return directed;
     }
-    //метод для добавления вершины
+    //РјРµС‚РѕРґ РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ РІРµСЂС€РёРЅС‹
     void addVertex(const string& name) {
-        if (nameToIndex.find(name) == nameToIndex.end()) { //проверка на существование вершины с таким же именем
-            nameToIndex[name] = numVertices; //добавляем в nameToIndex (связка с текущим числом вершин) для доступа к индексу вершины по ее имени
-            indexToName[numVertices] = name; //индекс связывается с именем вершины 
-            adjList.push_back(vector<Edge>()); //добавляем новый список ребер для вершины
-            ++numVertices; //увеличиваем число вершин
+        if (nameToIndex.find(name) == nameToIndex.end()) { //РїСЂРѕРІРµСЂРєР° РЅР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёРµ РІРµСЂС€РёРЅС‹ СЃ С‚Р°РєРёРј Р¶Рµ РёРјРµРЅРµРј
+            nameToIndex[name] = numVertices; //РґРѕР±Р°РІР»СЏРµРј РІ nameToIndex (СЃРІСЏР·РєР° СЃ С‚РµРєСѓС‰РёРј С‡РёСЃР»РѕРј РІРµСЂС€РёРЅ) РґР»СЏ РґРѕСЃС‚СѓРїР° Рє РёРЅРґРµРєСЃСѓ РІРµСЂС€РёРЅС‹ РїРѕ РµРµ РёРјРµРЅРё
+            indexToName[numVertices] = name; //РёРЅРґРµРєСЃ СЃРІСЏР·С‹РІР°РµС‚СЃСЏ СЃ РёРјРµРЅРµРј РІРµСЂС€РёРЅС‹ 
+            adjList.push_back(vector<Edge>()); //РґРѕР±Р°РІР»СЏРµРј РЅРѕРІС‹Р№ СЃРїРёСЃРѕРє СЂРµР±РµСЂ РґР»СЏ РІРµСЂС€РёРЅС‹
+            ++numVertices; //СѓРІРµР»РёС‡РёРІР°РµРј С‡РёСЃР»Рѕ РІРµСЂС€РёРЅ
         }
     }
 
-    //метод для добавления ребра
+    //РјРµС‚РѕРґ РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ СЂРµР±СЂР°
     void addEdge(const string& from, const string& to, int weight) {
-        addVertex(from); //проверяем существуют ли вершины, между которыми можно построить ребро
+        addVertex(from); //РїСЂРѕРІРµСЂСЏРµРј СЃСѓС‰РµСЃС‚РІСѓСЋС‚ Р»Рё РІРµСЂС€РёРЅС‹, РјРµР¶РґСѓ РєРѕС‚РѕСЂС‹РјРё РјРѕР¶РЅРѕ РїРѕСЃС‚СЂРѕРёС‚СЊ СЂРµР±СЂРѕ
         addVertex(to);
-        int u = nameToIndex[from]; //находим индексы вершин в хэш-таблице
+        int u = nameToIndex[from]; //РЅР°С…РѕРґРёРј РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ РІ С…СЌС€-С‚Р°Р±Р»РёС†Рµ
         int v = nameToIndex[to];
-        adjList[u].push_back(Edge(v, weight)); //добавляем ребро в список смежности
+        adjList[u].push_back(Edge(v, weight)); //РґРѕР±Р°РІР»СЏРµРј СЂРµР±СЂРѕ РІ СЃРїРёСЃРѕРє СЃРјРµР¶РЅРѕСЃС‚Рё
 
-        if (!directed) { //если граф неориентированный, то добавляем обратное ребро
+        if (!directed) { //РµСЃР»Рё РіСЂР°С„ РЅРµРѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅС‹Р№, С‚Рѕ РґРѕР±Р°РІР»СЏРµРј РѕР±СЂР°С‚РЅРѕРµ СЂРµР±СЂРѕ
             adjList[v].push_back(Edge(u, weight));
         }
     }
-    //метод для удаления вершины
-    void removeVertex(const string& name) { //проверка на существование вершины
+    //РјРµС‚РѕРґ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ РІРµСЂС€РёРЅС‹
+    void removeVertex(const string& name) { //РїСЂРѕРІРµСЂРєР° РЅР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёРµ РІРµСЂС€РёРЅС‹
         if (nameToIndex.find(name) == nameToIndex.end()) {
-            cout << "Вершина не найдена."<<endl;
+            cout << "Р’РµСЂС€РёРЅР° РЅРµ РЅР°Р№РґРµРЅР°."<<endl;
             return;
         }
 
-        int index = nameToIndex[name]; //индекс удаляемой вершины
+        int index = nameToIndex[name]; //РёРЅРґРµРєСЃ СѓРґР°Р»СЏРµРјРѕР№ РІРµСЂС€РёРЅС‹
 
         
-        for (auto& edges : adjList) { //удаляем все ребра, который входят и выходят из вершины
+        for (auto& edges : adjList) { //СѓРґР°Р»СЏРµРј РІСЃРµ СЂРµР±СЂР°, РєРѕС‚РѕСЂС‹Р№ РІС…РѕРґСЏС‚ Рё РІС‹С…РѕРґСЏС‚ РёР· РІРµСЂС€РёРЅС‹
             edges.erase(remove_if(edges.begin(), edges.end(),
                 [index](const Edge& edge) { return edge.to == index; }),
                 edges.end());
         }
 
-        adjList.erase(adjList.begin() + index); //удаляем список смежности для данной вершины
+        adjList.erase(adjList.begin() + index); //СѓРґР°Р»СЏРµРј СЃРїРёСЃРѕРє СЃРјРµР¶РЅРѕСЃС‚Рё РґР»СЏ РґР°РЅРЅРѕР№ РІРµСЂС€РёРЅС‹
        
-        for (auto& edges : adjList) { //перенумеруем все вершины, у которых индекс больше, чем у удаленной вершины
+        for (auto& edges : adjList) { //РїРµСЂРµРЅСѓРјРµСЂСѓРµРј РІСЃРµ РІРµСЂС€РёРЅС‹, Сѓ РєРѕС‚РѕСЂС‹С… РёРЅРґРµРєСЃ Р±РѕР»СЊС€Рµ, С‡РµРј Сѓ СѓРґР°Р»РµРЅРЅРѕР№ РІРµСЂС€РёРЅС‹
             for (auto& edge : edges) {
                 if (edge.to > index) {
-                    --edge.to;  //смещаем индекс на -1
+                    --edge.to;  //СЃРјРµС‰Р°РµРј РёРЅРґРµРєСЃ РЅР° -1
                 }
             }
         }
@@ -131,7 +132,7 @@ public:
         unordered_map<int, string> newIndexToName;
 
         int newIndex = 0;
-        for (const auto& pair : indexToName) { //обновляем хэш-таблицы
+        for (const auto& pair : indexToName) { //РѕР±РЅРѕРІР»СЏРµРј С…СЌС€-С‚Р°Р±Р»РёС†С‹
             if (pair.first != index) {  
                 newIndexToName[newIndex] = pair.second;
                 newNameToIndex[pair.second] = newIndex;
@@ -139,19 +140,19 @@ public:
             }
         }
 
-        nameToIndex = move(newNameToIndex); //заменяем старые хэш-таблицы на новые 
+        nameToIndex = move(newNameToIndex); //Р·Р°РјРµРЅСЏРµРј СЃС‚Р°СЂС‹Рµ С…СЌС€-С‚Р°Р±Р»РёС†С‹ РЅР° РЅРѕРІС‹Рµ 
         indexToName = move(newIndexToName);
         --numVertices;  
     }
 
 
-    //метод для удаления ребра 
+    //РјРµС‚РѕРґ РґР»СЏ СѓРґР°Р»РµРЅРёСЏ СЂРµР±СЂР° 
     void removeEdge(const string& from, const string& to) {
-        if (nameToIndex.find(from) == nameToIndex.end() || nameToIndex.find(to) == nameToIndex.end()) { //проверка на существование указанных вершин между которыми удаляется ребро
-            cout << "Одна из вершин (или обе) не существует." << endl;
+        if (nameToIndex.find(from) == nameToIndex.end() || nameToIndex.find(to) == nameToIndex.end()) { //РїСЂРѕРІРµСЂРєР° РЅР° СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёРµ СѓРєР°Р·Р°РЅРЅС‹С… РІРµСЂС€РёРЅ РјРµР¶РґСѓ РєРѕС‚РѕСЂС‹РјРё СѓРґР°Р»СЏРµС‚СЃСЏ СЂРµР±СЂРѕ
+            cout << "РћРґРЅР° РёР· РІРµСЂС€РёРЅ (РёР»Рё РѕР±Рµ) РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚." << endl;
             return;
         }
-        int u = nameToIndex[from]; //получаем индексы вершин
+        int u = nameToIndex[from]; //РїРѕР»СѓС‡Р°РµРј РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ
         int v = nameToIndex[to];
         bool edgeExists = false;
         for (const Edge& edge : adjList[u]) {
@@ -162,26 +163,26 @@ public:
         }
 
         if (!edgeExists) {
-            cout << "Ребро между " << from << " и " << to << " не существует." << endl;
+            cout << "Р РµР±СЂРѕ РјРµР¶РґСѓ " << from << " Рё " << to << " РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚." << endl;
             return;
         }
-        adjList[u].erase(remove_if(adjList[u].begin(), adjList[u].end(), //удаление ребра из списка смежности вершины u (from) 
+        adjList[u].erase(remove_if(adjList[u].begin(), adjList[u].end(), //СѓРґР°Р»РµРЅРёРµ СЂРµР±СЂР° РёР· СЃРїРёСЃРєР° СЃРјРµР¶РЅРѕСЃС‚Рё РІРµСЂС€РёРЅС‹ u (from) 
             [v](const Edge& edge) { return edge.to == v; }),
             adjList[u].end());
 
-        if (!directed) { //если граф неориентированный, то удаляем обратное ребро
+        if (!directed) { //РµСЃР»Рё РіСЂР°С„ РЅРµРѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅС‹Р№, С‚Рѕ СѓРґР°Р»СЏРµРј РѕР±СЂР°С‚РЅРѕРµ СЂРµР±СЂРѕ
             adjList[v].erase(remove_if(adjList[v].begin(), adjList[v].end(),
                 [u](const Edge& edge) { return edge.to == u; }),
                 adjList[v].end());
         }
     }
 
-    //метод для сохранения граф в файл
+    //РјРµС‚РѕРґ РґР»СЏ СЃРѕС…СЂР°РЅРµРЅРёСЏ РіСЂР°С„ РІ С„Р°Р№Р»
     void saveToFile(const string& filename) const {
         ofstream outFile(filename);
 
         if (!outFile) {
-            cout << "Ошибка открытия файла для записи!" << endl;
+            cout << "РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р° РґР»СЏ Р·Р°РїРёСЃРё!" << endl;
             return;
         }
         if (directed) {
@@ -191,10 +192,10 @@ public:
             outFile << "Undirected\n";
         }
 
-        //записываем ребра
+        //Р·Р°РїРёСЃС‹РІР°РµРј СЂРµР±СЂР°
         for (int u = 0; u < numVertices; ++u) {
             for (const Edge& edge : adjList[u]) {
-                //если граф неориентированный, пропускаем записи обратных рёбер
+                //РµСЃР»Рё РіСЂР°С„ РЅРµРѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅС‹Р№, РїСЂРѕРїСѓСЃРєР°РµРј Р·Р°РїРёСЃРё РѕР±СЂР°С‚РЅС‹С… СЂС‘Р±РµСЂ
                 if (directed || u < edge.to) {
                     outFile << indexToName.at(u) << " "
                         << indexToName.at(edge.to) << " "
@@ -204,15 +205,15 @@ public:
         }
 
         outFile.close();
-        cout << "Граф успешно сохранён в файл " << filename << endl;
+        cout << "Р“СЂР°С„ СѓСЃРїРµС€РЅРѕ СЃРѕС…СЂР°РЅС‘РЅ РІ С„Р°Р№Р» " << filename << endl;
     }
 
-    //метод для вывода списка смежности
+    //РјРµС‚РѕРґ РґР»СЏ РІС‹РІРѕРґР° СЃРїРёСЃРєР° СЃРјРµР¶РЅРѕСЃС‚Рё
     void printAdjList() const {
         for (int u = 0; u < numVertices; ++u) {
             cout << indexToName.at(u) << ": ";
             for (const Edge& edge : adjList[u]) {
-                cout << "(" << indexToName.at(edge.to) << ", вес: " << edge.weight << ") ";
+                cout << "(" << indexToName.at(edge.to) << ", РІРµСЃ: " << edge.weight << ") ";
             }
             cout << endl;
         }
@@ -221,190 +222,145 @@ public:
 
     void findCommonTarget(const string& u, const string& v) {
         if (nameToIndex.find(u) == nameToIndex.end() || nameToIndex.find(v) == nameToIndex.end()) {
-            cout << "Одна или обе вершины не существуют!" << endl;
+            cout << "РћРґРЅР° РёР»Рё РѕР±Рµ РІРµСЂС€РёРЅС‹ РЅРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‚!" << endl;
             return;
         }
 
-        int uIndex = nameToIndex[u]; //извлекаем индексы вершин из хэш-таблицы
+        int uIndex = nameToIndex[u]; //РёР·РІР»РµРєР°РµРј РёРЅРґРµРєСЃС‹ РІРµСЂС€РёРЅ РёР· С…СЌС€-С‚Р°Р±Р»РёС†С‹
         int vIndex = nameToIndex[v]; 
 
-        unordered_set<int> targetsFromU; //множества для хранения конечных вершин, в которые ведут рёбра из u и v
+        unordered_set<int> targetsFromU; //РјРЅРѕР¶РµСЃС‚РІР° РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РєРѕРЅРµС‡РЅС‹С… РІРµСЂС€РёРЅ, РІ РєРѕС‚РѕСЂС‹Рµ РІРµРґСѓС‚ СЂС‘Р±СЂР° РёР· u Рё v
         unordered_set<int> targetsFromV;
 
         
-        for (const Edge& edge : adjList[uIndex]) { //проходим по ребрам и ищем конечные вершины для u 
+        for (const Edge& edge : adjList[uIndex]) { //РїСЂРѕС…РѕРґРёРј РїРѕ СЂРµР±СЂР°Рј Рё РёС‰РµРј РєРѕРЅРµС‡РЅС‹Рµ РІРµСЂС€РёРЅС‹ РґР»СЏ u 
             targetsFromU.insert(edge.to);
         }
 
      
-        for (const Edge& edge : adjList[vIndex]) { //проходим по ребрам и ищем конечные вершины для v
+        for (const Edge& edge : adjList[vIndex]) { //РїСЂРѕС…РѕРґРёРј РїРѕ СЂРµР±СЂР°Рј Рё РёС‰РµРј РєРѕРЅРµС‡РЅС‹Рµ РІРµСЂС€РёРЅС‹ РґР»СЏ v
             targetsFromV.insert(edge.to);
         }
 
         
-        for (int target : targetsFromU) { //ищем пересечение двух множеств
+        for (int target : targetsFromU) { //РёС‰РµРј РїРµСЂРµСЃРµС‡РµРЅРёРµ РґРІСѓС… РјРЅРѕР¶РµСЃС‚РІ
             if (targetsFromV.find(target) != targetsFromV.end()) {
-                cout << "Общая вершина: " << indexToName[target] << endl;
+                cout << "РћР±С‰Р°СЏ РІРµСЂС€РёРЅР°: " << indexToName[target] << endl;
                 return;
             }
         }
 
-        cout << "Нет общей вершины, в которую ведут дуги как из " << u << " и из " << v << endl;
+        cout << "РќРµС‚ РѕР±С‰РµР№ РІРµСЂС€РёРЅС‹, РІ РєРѕС‚РѕСЂСѓСЋ РІРµРґСѓС‚ РґСѓРіРё РєР°Рє РёР· " << u << " Рё РёР· " << v << endl;
     }
 
 
     void getOutDegree(const string& vertexName) {
         if (nameToIndex.find(vertexName) == nameToIndex.end()) {
-            cout << "Вершина " << vertexName << " не найдена!" << endl;
+            cout << "Р’РµСЂС€РёРЅР° " << vertexName << " РЅРµ РЅР°Р№РґРµРЅР°!" << endl;
             return;
         }
 
-        int vertexIndex = nameToIndex[vertexName]; //индекс вершины
-        int outDegree = adjList[vertexIndex].size();  //кол-во ребер, исходящих из вершины 
+        int vertexIndex = nameToIndex[vertexName]; //РёРЅРґРµРєСЃ РІРµСЂС€РёРЅС‹
+        int outDegree = adjList[vertexIndex].size();  //РєРѕР»-РІРѕ СЂРµР±РµСЂ, РёСЃС…РѕРґСЏС‰РёС… РёР· РІРµСЂС€РёРЅС‹ 
 
-        cout << "Полустепень исхода вершины " << vertexName << " : " << outDegree << endl;
+        cout << "РџРѕР»СѓСЃС‚РµРїРµРЅСЊ РёСЃС…РѕРґР° РІРµСЂС€РёРЅС‹ " << vertexName << " : " << outDegree << endl;
     }
 
     Graph reverseGraph() const {
-        Graph reversedGraph(true); //новый граф должен быть ориентированным
+        Graph reversedGraph(true); //РЅРѕРІС‹Р№ РіСЂР°С„ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅС‹Рј
 
-        for (int i = 0; i < numVertices; ++i) { //добавляем обратные ребра в новый граф
+        for (int i = 0; i < numVertices; ++i) { //РґРѕР±Р°РІР»СЏРµРј РѕР±СЂР°С‚РЅС‹Рµ СЂРµР±СЂР° РІ РЅРѕРІС‹Р№ РіСЂР°С„
             for (const Edge& edge : adjList[i]) {
                 reversedGraph.addEdge(indexToName.at(edge.to), indexToName.at(i), edge.weight);
             }
         }
         return reversedGraph;  
     }
-    bool edgeExists(const string& from, const string& to) {
-        if (nameToIndex.find(from) == nameToIndex.end() || nameToIndex.find(to) == nameToIndex.end()) {
-            return false; //если одна из вершин не существует, ребро не может существовать
+
+    //5-6 task
+    //С„СѓРЅРєС†РёСЏ РґР»СЏ РїСЂРѕРІРµСЂРєРё, РјРѕР¶РЅРѕ Р»Рё РѕС‚РєР»СЋС‡РёС‚СЊ РґРІРµ РІРµСЂС€РёРЅС‹, РёСЃРїРѕР»СЊР·СѓСЏ РЅРµ Р±РѕР»РµРµ k СЂС‘Р±РµСЂ
+    bool canDisconnectWithKEdges(const string& u, const string& v, int k, bool isDirected) {
+        if (nameToIndex.find(u) == nameToIndex.end() || nameToIndex.find(v) == nameToIndex.end()) {
+            cout << "РћРґРЅР° РёР»Рё РѕР±Рµ РІРµСЂС€РёРЅС‹ РЅРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‚!" << endl;
+            return false;
         }
 
-        int u = nameToIndex[from]; 
-        int v = nameToIndex[to];   
+        int uIndex = nameToIndex[u];
+        int vIndex = nameToIndex[v];
 
-        //если ребро есть в списке смежности
-        for (const Edge& edge : adjList[u]) {
-            if (edge.to == v) {
-                return true; //ребро существует
+        if (!hasPath(uIndex, vIndex)) {
+            cout << "Р’РµСЂС€РёРЅС‹ " << u << " Рё " << v << " СѓР¶Рµ РѕС‚РєР»СЋС‡РµРЅС‹." << endl;
+            return true;
+        }
+
+        if (isDirected) {
+            //РґР»СЏ РѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅРѕРіРѕ РіСЂР°С„Р° вЂ” РїСЂРѕРІРµСЂСЏРµРј РІСЃРµ РёСЃС…РѕРґСЏС‰РёРµ СЂС‘Р±СЂР° РёР· u
+            vector<pair<int, int>> edgesToDisconnect;
+            for (const Edge& edge : adjList[uIndex]) {
+                int nextNode = edge.to;
+                if (hasPath(nextNode, vIndex)) {
+                    edgesToDisconnect.push_back({ uIndex, nextNode });
+                }
+            }
+
+            if (edgesToDisconnect.size() <= k) {
+                cout << "РњРѕР¶РЅРѕ РѕС‚РєР»СЋС‡РёС‚СЊ РїСѓС‚СЊ РјРµР¶РґСѓ " << u << " Рё " << v << " СЃ РїРѕРјРѕС‰СЊСЋ РѕС‚РєР»СЋС‡РµРЅРёСЏ "
+                    << edgesToDisconnect.size() << " СЂС‘Р±РµСЂ." << endl;
+                cout << "Р С‘Р±СЂР° РґР»СЏ РѕС‚РєР»СЋС‡РµРЅРёСЏ: ";
+                for (const auto& edge : edgesToDisconnect) {
+                    cout << "(" << indexToName[edge.first] << ", " << indexToName[edge.second] << ") ";
+                }
+                cout << endl;
+                return true;
+            }
+            else {
+                cout << "РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєР»СЋС‡РёС‚СЊ РїСѓС‚СЊ РјРµР¶РґСѓ " << u << " Рё " << v << " СЃ РїРѕРјРѕС‰СЊСЋ " << k
+                    << " СЂС‘Р±РµСЂ." << endl;
+                return false;
             }
         }
-
-        return false; //ребро не существует
-    }
-    bool canDisconnectWithKEdges(const string& u, const string& v, int k) {
-        if (nameToIndex.find(u) == nameToIndex.end() || nameToIndex.find(v) == nameToIndex.end()) { //проверка на существование вершин
-            cout << "Одна или обе вершины не существуют!" << endl;
-            return false;
-        }
-        if (!edgeExists(u, v)) {
-            cout << "Ребро между " << u << " и " << v << " не существует." << endl;
-            return false;
-        }
-        int uIndex = nameToIndex[u];  //индексы вершины u и v
-        int vIndex = nameToIndex[v];  
-
-        //если не существует пути из u в v, то ничего искать не нужно
-        if (!hasPath(uIndex, vIndex)) {
-            cout << "Вершины " << u << " и " << v << " уже отключены." << endl;
-            return true;
-        }
-
-        //поиск критических ребер, которые разрывают связь между u и v 
-        vector<pair<int, int>> criticalEdges = findCriticalEdges(uIndex, vIndex);
-
-        //если количество критических рёбер меньше или равно k, можем разорвать путь
-        if (criticalEdges.size() == k) {
-            cout << "Можно отключить вершины " << u << " и " << v << " с помощью " << k
-                << " рёбер." << endl;
-            return true;
-        }
         else {
-            cout << "Невозможно отключить вершины " << u << " и " << v << " с помощью " << k
-                << " рёбер." << endl;
-            return false;
+            //РґР»СЏ РЅРµРѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅРѕРіРѕ РіСЂР°С„Р° РїРѕРґСЃС‡РёС‚С‹РІР°РµРј СЃС‚РµРїРµРЅСЊ РІРµСЂС€РёРЅ
+            int degreeU = adjList[uIndex].size(); //РєРѕР»РёС‡РµСЃС‚РІРѕ СЂС‘Р±РµСЂ, СЃРІСЏР·Р°РЅРЅС‹С… СЃ РІРµСЂС€РёРЅРѕР№ u
+            int degreeV = adjList[vIndex].size(); //РєРѕР»РёС‡РµСЃС‚РІРѕ СЂС‘Р±РµСЂ, СЃРІСЏР·Р°РЅРЅС‹С… СЃ РІРµСЂС€РёРЅРѕР№ v
+
+            if (degreeU <= k || degreeV <= k) {
+                cout << "РњРѕР¶РЅРѕ РѕС‚РєР»СЋС‡РёС‚СЊ РїСѓС‚СЊ РјРµР¶РґСѓ " << u << " Рё " << v << " СѓРґР°Р»РёРІ СЂС‘Р±СЂР°." << endl;
+                cout << "РЎС‚РµРїРµРЅСЊ " << u << ": " << degreeU << ", СЃС‚РµРїРµРЅСЊ " << v << ": " << degreeV << endl;
+                return true;
+            }
+            else {
+                cout << "РќРµРІРѕР·РјРѕР¶РЅРѕ РѕС‚РєР»СЋС‡РёС‚СЊ РїСѓС‚СЊ РјРµР¶РґСѓ " << u << " Рё " << v << " СЃ РїРѕРјРѕС‰СЊСЋ " << k
+                    << " СЂС‘Р±РµСЂ." << endl;
+                return false;
+            }
         }
     }
 
-    //вспомогательная функция для поиска всех путей
+
+    //С„СѓРЅРєС†РёСЏ РїСЂРѕРІРµСЂРєРё СЃСѓС‰РµСЃС‚РІРѕРІР°РЅРёСЏ РїСѓС‚Рё РјРµР¶РґСѓ РґРІСѓРјСЏ РІРµСЂС€РёРЅР°РјРё
     bool hasPath(int u, int v) {
-        vector<bool> visited(numVertices, false); //вектор для отслеживания посещенных вершин
+        vector<bool> visited(numVertices, false);
         return dfs(u, v, visited);
     }
 
-    //dfs для проверки существования пути
+    // РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ DFS РґР»СЏ РїСЂРѕРІРµСЂРєРё РїСѓС‚Рё
     bool dfs(int u, int v, vector<bool>& visited) {
-        if (u == v) { //если текущая вершина целевая вершина
-            return true;
+        if (u == v) return true; // РµСЃР»Рё РґРѕСЃС‚РёРіР»Рё С†РµР»РµРІРѕР№ РІРµСЂС€РёРЅС‹
+        visited[u] = true;
+        for (const Edge& edge : adjList[u]) {
+            if (!visited[edge.to] && dfs(edge.to, v, visited)) return true;
         }
-        visited[u] = true; //отмечаем вершину, как посещенную
-
-        for (const Edge& edge : adjList[u]) { //перебираем всех соседей вершины
-            if (!visited[edge.to]) {
-                if (dfs(edge.to, v, visited)) { //рекурсивно вызываем метод для след. вершины
-                    return true;
-                }
-            }
-        }
-
         return false;
     }
-
-    //поиск критических рёбер, удаление которых разорвёт путь
-    vector<pair<int, int>> findCriticalEdges(int u, int v) {
-        vector<pair<int, int>> criticalEdges; //список критических ребер
-
-        //применяю DFS для поиска всех путей и выявления критических рёбер
-        vector<bool> visited(numVertices, false);
-        dfsFindCriticalEdges(u, v, visited, criticalEdges);
-
-        return criticalEdges;
-    }
-    //dfs для критических ребер
-    void dfsFindCriticalEdges(int u, int v, vector<bool>& visited, vector<pair<int, int>>& criticalEdges) {
-        if (u == v) {
-            return;
-        }
-
-        visited[u] = true; //отмечаем, что вершина посещена
-
-        for (const Edge& edge : adjList[u]) {
-            if (!visited[edge.to]) {
-                
-                int to = edge.to;
-                visited[to] = true;
-
-                
-                if (!hasPathWithoutEdge(u, to, v)) { //проверяем является ли текущее ребро критическим
-                    criticalEdges.push_back(make_pair(u, to));
-                }
-
-                
-                dfsFindCriticalEdges(to, v, visited, criticalEdges); //продолжжаем обход в глубину
-
-                
-                visited[to] = false; //сбрасываем статус посещенной вершины
-            }
-        }
-
-        visited[u] = false; 
-    }
-
-
-    bool hasPathWithoutEdge(int from, int to, int v) {
-        vector<bool> visited(numVertices, false); //вектор для отслеживания посещенных вершин
-        visited[to] = true; //исключаем ребро с помощью метки
-        return dfs(from, v, visited); //запускаем dfs игнорируя это ребро
-    }
-
-    //метод для нахождения цикломатического числа графа
+    //РјРµС‚РѕРґ РґР»СЏ РЅР°С…РѕР¶РґРµРЅРёСЏ С†РёРєР»РѕРјР°С‚РёС‡РµСЃРєРѕРіРѕ С‡РёСЃР»Р° РіСЂР°С„Р°
     int findCyclomaticNumber() const {
         int edgeCount = 0;
-        for (const auto& edges : adjList) { //подсчитываем кол-во ребер для каждой вершины
+        for (const auto& edges : adjList) { //РїРѕРґСЃС‡РёС‚С‹РІР°РµРј РєРѕР»-РІРѕ СЂРµР±РµСЂ РґР»СЏ РєР°Р¶РґРѕР№ РІРµСЂС€РёРЅС‹
             edgeCount += edges.size();
         }
         
-        if (!directed) { //для неориентированного графа (ребра делятся на два, т.к. они дважды записаны в список смежности)
+        if (!directed) { //РґР»СЏ РЅРµРѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅРѕРіРѕ РіСЂР°С„Р° (СЂРµР±СЂР° РґРµР»СЏС‚СЃСЏ РЅР° РґРІР°, С‚.Рє. РѕРЅРё РґРІР°Р¶РґС‹ Р·Р°РїРёСЃР°РЅС‹ РІ СЃРїРёСЃРѕРє СЃРјРµР¶РЅРѕСЃС‚Рё)
             edgeCount /= 2;
         }
 
@@ -412,7 +368,7 @@ public:
         return edgeCount - numVertices + componentCount;
     }
 
-    int countConnectedComponents() const { //метод для проверки посещенных вершин
+    int countConnectedComponents() const { //РјРµС‚РѕРґ РґР»СЏ РїСЂРѕРІРµСЂРєРё РїРѕСЃРµС‰РµРЅРЅС‹С… РІРµСЂС€РёРЅ
         vector<bool> visited(numVertices, false);
         int componentCount = 0;
 
@@ -426,7 +382,7 @@ public:
         return componentCount;
     }
 
-    //dfs для обхода всех вершин, которые связаны с начальной
+    //dfs РґР»СЏ РѕР±С…РѕРґР° РІСЃРµС… РІРµСЂС€РёРЅ, РєРѕС‚РѕСЂС‹Рµ СЃРІСЏР·Р°РЅС‹ СЃ РЅР°С‡Р°Р»СЊРЅРѕР№
     void dfsForComponents(int vertex, vector<bool>& visited) const {
         visited[vertex] = true; 
         for (const Edge& edge : adjList[vertex]) {
@@ -435,6 +391,257 @@ public:
             }
         }
     }
+    //РјРµС‚РѕРґ РґР»СЏ РЅР°С…РѕР¶РґРµРЅРёСЏ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ РѕСЃС‚РѕРІРЅРѕРіРѕ РґРµСЂРµРІР° СЃ РїРѕРјРѕС‰СЊСЋ Р°Р»РіРѕСЂРёС‚РјР° РџСЂРёРјР°
+    void findMinimumSpanningTree() {
+        if (directed) {
+            cout << "РђР»РіРѕСЂРёС‚Рј РџСЂРёРјР° РїСЂРёРјРµРЅРёРј С‚РѕР»СЊРєРѕ Рє РЅРµРѕСЂРёРµРЅС‚РёСЂРѕРІР°РЅРЅС‹Рј РіСЂР°С„Р°Рј." << endl;
+            return;
+        }
+
+        vector<bool> inMST(numVertices, false);  //РјР°СЃСЃРёРІ РґР»СЏ РѕС‚СЃР»РµР¶РёРІР°РЅРёСЏ РІРµСЂС€РёРЅ РІ РѕСЃС‚РѕРІРЅРѕРј РґРµСЂРµРІРµ
+        vector<int> minEdgeWeight(numVertices, INT_MAX);  //РјРёРЅРёРјР°Р»СЊРЅС‹Р№ РІРµСЃ РґР»СЏ РґРѕР±Р°РІР»РµРЅРёСЏ РєР°Р¶РґРѕР№ РІРµСЂС€РёРЅС‹
+        vector<int> parent(numVertices, -1);  //РјР°СЃСЃРёРІ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ СЂРѕРґРёС‚РµР»РµР№ РІ РјРёРЅ. РѕСЃС‚. РґРµСЂРµРІРµ
+
+        //РїСЂРёРѕСЂРёС‚РµС‚РЅР°СЏ РѕС‡РµСЂРµРґСЊ РґР»СЏ РІС‹Р±РѕСЂР° РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ РІРµСЃР° СЂС‘Р±СЂР°
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+
+        int start = 0;  //РЅР°С‡РёРЅР°РµРј СЃ РІРµСЂС€РёРЅС‹ СЃ РёРЅРґРµРєСЃРѕРј 0
+        minEdgeWeight[start] = 0;
+        pq.push({ 0, start });  //РїРѕРјРµС‰Р°РµРј РЅР°С‡Р°Р»СЊРЅСѓСЋ РІРµСЂС€РёРЅСѓ РІ РѕС‡РµСЂРµРґСЊ
+
+        while (!pq.empty()) {
+            int u = pq.top().second;  //РёР·РІР»РµРєР°РµРј РІРµСЂС€РёРЅСѓ СЃ РјРёРЅРёРјР°Р»СЊРЅС‹Рј РІРµСЃРѕРј
+            pq.pop();
+
+            if (inMST[u]) continue;  //РїСЂРѕРїСѓСЃРєР°РµРј, РµСЃР»Рё РІРµСЂС€РёРЅР° СѓР¶Рµ РІ РњРћРЎ
+
+            inMST[u] = true;  //РґРѕР±Р°РІР»СЏРµРј РІРµСЂС€РёРЅСѓ РІ РњРћРЎ
+
+            //РѕР±С…РѕРґРёРј РІСЃРµ СЃРјРµР¶РЅС‹Рµ РІРµСЂС€РёРЅС‹
+            for (const Edge& edge : adjList[u]) {
+                int v = edge.to;
+                int weight = edge.weight;
+
+                //РµСЃР»Рё РІРµСЂС€РёРЅР° v РµС‰С‘ РЅРµ РІ РњРћРЎ Рё РІРµСЃ СЂРµР±СЂР° РјРµРЅСЊС€Рµ РёР·РІРµСЃС‚РЅРѕРіРѕ
+                if (!inMST[v] && weight < minEdgeWeight[v]) {
+                    minEdgeWeight[v] = weight;
+                    pq.push({ weight, v });
+                    parent[v] = u;  //РѕР±РЅРѕРІР»СЏРµРј СЂРѕРґРёС‚РµР»СЏ РІРµСЂС€РёРЅС‹
+                }
+            }
+        }
+
+        //РІС‹РІРѕРґ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ РѕСЃС‚РѕРІРЅРѕРіРѕ РґРµСЂРµРІР°
+        cout << "РњРёРЅРёРјР°Р»СЊРЅРѕРµ РѕСЃС‚РѕРІРЅРѕРµ РґРµСЂРµРІРѕ:" << endl;
+        int totalWeight = 0;
+        for (int i = 1; i < numVertices; ++i) {
+            if (parent[i] != -1) {
+                cout << indexToName[parent[i]] << " - " << indexToName[i] << " (РІРµСЃ: " << minEdgeWeight[i] << ")" << endl;
+                totalWeight += minEdgeWeight[i];
+            }
+        }
+        cout << "РћР±С‰РёР№ РІРµСЃ РѕСЃС‚РѕРІРЅРѕРіРѕ РґРµСЂРµРІР°: " << totalWeight << endl;
+    }
+
+    //РјРµС‚РѕРґ РґР»СЏ РїРѕРёСЃРєР° РєСЂР°С‚С‡Р°Р№С€РµРіРѕ РїСѓС‚Рё РёР· РІРµСЂС€РёРЅС‹ u РґРѕ РІРµСЂС€РёРЅС‹ v СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј Р°Р»РіРѕСЂРёС‚РјР° Р‘РµР»Р»РјР°РЅР°-Р¤РѕСЂРґР°
+    void findShortestPathBellmanFord(const string& u, const string& v) {
+        if (nameToIndex.find(u) == nameToIndex.end() || nameToIndex.find(v) == nameToIndex.end()) {
+            cout << "РћРґРЅР° РёР»Рё РѕР±Рµ РІРµСЂС€РёРЅС‹ РЅРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‚!" << endl;
+            return;
+        }
+
+        int start = nameToIndex[u]; //РёРЅРґРµРєСЃ РЅР°С‡Р°Р»СЊРЅРѕР№ РІРµСЂС€РёРЅС‹
+        int end = nameToIndex[v];   //РёРЅРґРµРєСЃ РєРѕРЅРµС‡РЅРѕР№ РІРµСЂС€РёРЅС‹
+
+        vector<int> distance(numVertices, INT_MAX); //РјРёРЅРёРјР°Р»СЊРЅС‹Рµ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РґРѕ РєР°Р¶РґРѕР№ РІРµСЂС€РёРЅС‹
+        vector<int> predecessor(numVertices, -1);   //РїСЂРµРґС€РµСЃС‚РІРµРЅРЅРёРєРё РґР»СЏ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РїСѓС‚Рё
+
+        distance[start] = 0; //СЂР°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ РЅР°С‡Р°Р»СЊРЅРѕР№ РІРµСЂС€РёРЅС‹ СЂР°РІРЅРѕ 0
+
+        //РѕСЃРЅРѕРІРЅРѕР№ С†РёРєР» Р°Р»РіРѕСЂРёС‚РјР° Р‘РµР»Р»РјР°РЅР°-Р¤РѕСЂРґР°
+        for (int i = 0; i < numVertices - 1; ++i) {
+            for (int u = 0; u < numVertices; ++u) {
+                for (const Edge& edge : adjList[u]) {
+                    int v = edge.to;
+                    int weight = edge.weight;
+
+                    //РµСЃР»Рё РЅР°Р№РґРµРЅРѕ Р±РѕР»РµРµ РєРѕСЂРѕС‚РєРѕРµ СЂР°СЃСЃС‚РѕСЏРЅРёРµ, РѕР±РЅРѕРІР»СЏРµРј РµРіРѕ
+                    if (distance[u] != INT_MAX && distance[u] + weight < distance[v]) {
+                        distance[v] = distance[u] + weight;
+                        predecessor[v] = u;
+                    }
+                }
+            }
+        }
+
+        //РїСЂРѕРІРµСЂРєР° РЅР° РЅР°Р»РёС‡РёРµ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅРѕРіРѕ С†РёРєР»Р°
+        for (int u = 0; u < numVertices; ++u) {
+            for (const Edge& edge : adjList[u]) {
+                int v = edge.to;
+                int weight = edge.weight;
+                if (distance[u] != INT_MAX && distance[u] + weight < distance[v]) {
+                    cout << "Р“СЂР°С„ СЃРѕРґРµСЂР¶РёС‚ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Р№ С†РёРєР»!" << endl;
+                    return;
+                }
+            }
+        }
+
+        //РµСЃР»Рё РєРѕРЅРµС‡РЅР°СЏ РІРµСЂС€РёРЅР° РЅРµРґРѕСЃС‚РёР¶РёРјР°
+        if (distance[end] == INT_MAX) {
+            cout << "Р’РµСЂС€РёРЅР° " << v << " РЅРµРґРѕСЃС‚РёР¶РёРјР° РёР· " << u << "." << endl;
+            return;
+        }
+
+        //РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїСѓС‚СЊ РѕС‚ u РґРѕ v
+        vector<string> path;
+        for (int current = end; current != -1; current = predecessor[current]) {
+            path.push_back(indexToName[current]);
+        }
+        reverse(path.begin(), path.end());
+
+        //РІС‹РІРѕРґ СЂРµР·СѓР»СЊС‚Р°С‚Р°
+        cout << "РљСЂР°С‚С‡Р°Р№С€РёР№ РїСѓС‚СЊ РёР· " << u << " РІ " << v << ": ";
+        for (const string& vertex : path) {
+            cout << vertex << " ";
+        }
+        cout << endl;
+        cout << "Р”Р»РёРЅР° РїСѓС‚Рё: " << distance[end] << endl;
+    }
+    //РѕРїСЂРµРґРµР»РёС‚СЊ, СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё РїСѓС‚СЊ РґР»РёРЅРѕР№ РЅРµ Р±РѕР»РµРµ L РјРµР¶РґСѓ РґРІСѓРјСЏ Р·Р°РґР°РЅРЅС‹РјРё РІРµСЂС€РёРЅР°РјРё РіСЂР°С„Р° СЃ РїРѕРјРѕС‰СЊСЋ Р°Р»РіРѕСЂРёС‚РјР° Р¤Р»РѕР№РґР° вЂ” РЈРѕСЂС€РµР»Р»Р°
+    void findPathWithinL(const string& startName, const string& endName, int L) {
+        //РїСЂРѕРІРµСЂСЏРµРј, СЃСѓС‰РµСЃС‚РІСѓСЋС‚ Р»Рё РЅР°С‡Р°Р»СЊРЅР°СЏ Рё РєРѕРЅРµС‡РЅР°СЏ РІРµСЂС€РёРЅС‹
+        if (nameToIndex.find(startName) == nameToIndex.end() || nameToIndex.find(endName) == nameToIndex.end()) {
+            cout << "РћРґРЅР° РёР»Рё РѕР±Рµ РІРµСЂС€РёРЅС‹ РЅРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‚!" << endl;
+            return; 
+        }
+
+        //РёРЅРґРµРєСЃС‹ РґР»СЏ РІРµСЂС€РёРЅ
+        int start = nameToIndex[startName];
+        int end = nameToIndex[endName];
+        int n = adjList.size();
+        const int INF = INT_MAX / 2; //Р±РµСЃРєРѕРЅРµС‡РЅРѕСЃС‚СЊ РґР»СЏ РЅРµРґРѕСЃС‚РёР¶РёРјС‹С… РїСѓС‚РµР№
+
+        //РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ РјР°С‚СЂРёС†С‹ СЂР°СЃСЃС‚РѕСЏРЅРёР№ Рё РјР°С‚СЂРёС†С‹ "РїСЂРµРґРєРѕРІ" РґР»СЏ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РїСѓС‚Рё
+        vector<vector<int>> dist(n, vector<int>(n, INF));
+        vector<vector<int>> next(n, vector<int>(n, -1)); //РјР°С‚СЂРёС†Р° РґР»СЏ РІРѕСЃСЃС‚Р°РЅРѕРІР»РµРЅРёСЏ РїСѓС‚Рё
+
+        //СЃРїРёСЃРѕРє РІСЃРµС… РІРµСЂС€РёРЅ
+        vector<string> vertices;
+        for (const auto& pair : nameToIndex) {
+            vertices.push_back(pair.first); 
+        }
+
+        //Р·Р°РїРѕР»РЅРµРЅРёРµ СЃРїРёСЃРєРѕРІ СЂР°СЃСЃС‚РѕСЏРЅРёР№ Рё СЃРІСЏР·РµР№ РґР»СЏ РїСЂСЏРјС‹С… СЂС‘Р±РµСЂ
+        for (int i = 0; i < n; ++i) {
+            dist[i][i] = 0; // Р Р°СЃСЃС‚РѕСЏРЅРёРµ РґРѕ СЃРµР±СЏ = 0
+            for (const Edge& edge : adjList[i]) {
+                dist[i][edge.to] = edge.weight; //РІРµСЃ СЂРµР±СЂР°
+                next[i][edge.to] = edge.to;    //СЃРІСЏР·СЊ СЃ РґСЂСѓРіРёРјРё СЂРµР±СЂР°РјРё СЂРµР±СЂРѕ
+            }
+        }
+
+        //Р°Р»РіРѕСЂРёС‚Рј Р¤Р»РѕР№РґР°-РЈРѕСЂС€РµР»Р»Р° РґР»СЏ РЅР°С…РѕР¶РґРµРЅРёСЏ РІСЃРµС… РєСЂР°С‚С‡Р°Р№С€РёС… РїСѓС‚РµР№
+        for (int k = 0; k < n; ++k) {
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    if (dist[i][k] < INF && dist[k][j] < INF) {
+                        if (dist[i][j] > dist[i][k] + dist[k][j]) {
+                            dist[i][j] = dist[i][k] + dist[k][j];
+                            next[i][j] = next[i][k]; 
+                        }
+                    }
+                }
+            }
+        }
+
+        //РїСЂРѕРІРµСЂСЏРµРј, С‡С‚Рѕ СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё РїСѓС‚СЊ СЃ РґР»РёРЅРѕР№ <= L
+        if (dist[start][end] > L || dist[start][end] == INF) {
+            cout << "РџСѓС‚СЊ РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚ РёР»Рё РµРіРѕ РґР»РёРЅР° Р±РѕР»СЊС€Рµ, С‡РµРј " << L << endl;
+            return;
+        }
+
+        //РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїСѓС‚СЊ
+        vector<string> path;
+        int current = start;
+        while (current != end) {
+            if (current == -1) {
+                cout << "РџСѓС‚СЊ РЅРµРґРѕСЃС‚РёР¶РёРј!" << endl;
+                return; 
+            }
+            path.push_back(vertices[current]); //РґРѕР±Р°РІР»СЏРµРј РЅР°Р·РІР°РЅРёРµ РІРµСЂС€РёРЅС‹ РІ РїСѓС‚СЊ
+            current = next[current][end];
+        }
+        path.push_back(vertices[end]); //РґРѕР±Р°РІР»СЏРµРј РєРѕРЅРµС‡РЅСѓСЋ РІРµСЂС€РёРЅСѓ РІ РїСѓС‚СЊ
+
+        
+        cout << "РџСѓС‚СЊ РѕС‚ " << startName << " РґРѕ " << endName << " СЃ РґР»РёРЅРѕР№ <= " << L << "\n";
+        cout << "РњРёРЅРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅР° РїСѓС‚Рё : " << dist[start][end] << "\n";
+        for (const string& vertex : path) {
+            cout << vertex << " "; 
+        }
+        cout << endl;
+    }
+   
+    //РјРµС‚РѕРґ РґР»СЏ РїСЂРѕРІРµСЂРєРё РІРµСЂС€РёРЅС‹, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РµР№ СѓСЃР»РѕРІРёСЋ Р·Р°РґР°С‡Рё
+    vector<int> getVerticesWithPathsBelowN(int N) {
+        vector<int> validVertices; //СЃРїРёСЃРѕРє РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РІРµСЂС€РёРЅ, РєРѕС‚РѕСЂС‹Рµ СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‚ СѓСЃР»РѕРІРёСЋ.
+
+        for (int u = 0; u < numVertices; ++u) {
+            vector<int> distance(numVertices, INT_MAX);
+            distance[u] = 0;
+
+            //Р°Р»РіРѕСЂРёС‚Рј Р‘РµР»Р»РјР°РЅР°-Р¤РѕСЂРґР°
+            for (int i = 0; i < numVertices - 1; ++i) {
+                for (int v = 0; v < numVertices; ++v) {
+                    for (const Edge& edge : adjList[v]) {
+                        if (distance[v] != INT_MAX && distance[v] + edge.weight < distance[edge.to]) {
+                            distance[edge.to] = distance[v] + edge.weight;
+                        }
+                    }
+                }
+            }
+            //РїСЂРѕРІРµСЂРєР° РЅР° РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Р№ С†РёРєР»
+            bool hasNegativeCycle = false;
+            for (int v = 0; v < numVertices; ++v) {
+                for (const Edge& edge : adjList[v]) {
+                    if (distance[v] != INT_MAX && distance[v] + edge.weight < distance[edge.to]) {
+                        hasNegativeCycle = true;
+                        break;
+                    }
+                }
+            }
+            if (hasNegativeCycle) {
+                cout << "Р“СЂР°С„ СЃРѕРґРµСЂР¶РёС‚ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Р№ С†РёРєР». РџСЂРѕРІРµСЂРєР° РЅРµРІРѕР·РјРѕР¶РЅР°." << endl;
+                return {};
+            }
+            //РїСЂРѕРІРµСЂСЏРµРј РІСЃРµ РјРёРЅРёРјР°Р»СЊРЅС‹Рµ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РѕС‚ РІРµСЂС€РёРЅС‹ u
+            bool allBelowN = true;
+            for (int v = 0; v < numVertices; ++v) {
+                if (v != u && (distance[v] == INT_MAX || distance[v] > N)) {
+                    allBelowN = false;
+                    break;
+                }
+            }
+
+            //РµСЃР»Рё РІРµСЂС€РёРЅР° СѓРґРѕРІР»РµС‚РІРѕСЂСЏРµС‚ СѓСЃР»РѕРІРёСЋ, РґРѕР±Р°РІР»СЏРµРј РµРµ РІ СЃРїРёСЃРѕРє
+            if (allBelowN) {
+                validVertices.push_back(u);
+            }
+        }
+        if (!validVertices.empty()) {
+            cout << "Р’РµСЂС€РёРЅС‹, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёРµ СѓСЃР»РѕРІРёСЋ (СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РЅРµ РїСЂРµРІРѕСЃС…РѕРґСЏС‚ " << N << "): ";
+            for (int vertex : validVertices) {
+                cout << indexToName[vertex] << " ";
+            }
+            cout << endl;
+        }
+        else {
+            cout << "Р’ РіСЂР°С„Рµ РЅРµС‚ РІРµСЂС€РёРЅ, СѓРґРѕРІР»РµС‚РІРѕСЂСЏСЋС‰РёС… СѓСЃР»РѕРІРёСЋ." << endl;
+        }
+
+        return validVertices;
+    }
+
 };
 
 #endif  // GRAPH_H

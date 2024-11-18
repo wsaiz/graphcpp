@@ -1,0 +1,5 @@
+Undirected
+A B 6
+A C 3
+C D 2
+A D 5
