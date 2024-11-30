@@ -1,0 +1,12 @@
+Undirected
+A D 5
+D B 9
+D F 6
+A B 7
+D E 15
+B E 7
+B C 8
+C E 5
+E G 9
+E F 8
+F G 11

@@ -1,0 +1,12 @@
+Undirected
+X Y 4
+X Z 8
+Y Z 11
+Y W 8
+Z W 7
+Z V 2
+W V 4
+V U 6
+U T 7
+U S 10
+S T 9

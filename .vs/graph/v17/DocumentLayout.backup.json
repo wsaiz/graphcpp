@@ -70,7 +70,7 @@
               "RelativeDocumentMoniker": "graph\\Graph.h",
               "ToolTip": "C:\\Users\\wsaiz\\Documents\\GitHub\\graphcpp\\graph\\Graph.h",
               "RelativeToolTip": "graph\\Graph.h",
-              "ViewState": "AgIAAEkCAAAAAAAAAAAAAGUCAAArAAAAAAAAAA==",
+              "ViewState": "AgIAAIUAAAAAAAAAAAAAwKUAAAA5AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
               "WhenOpened": "2024-10-05T16:00:50.434Z",
               "EditorCaption": ""
@@ -95,10 +95,9 @@
               "RelativeDocumentMoniker": "graph\\Menu.cpp",
               "ToolTip": "C:\\Users\\wsaiz\\Documents\\GitHub\\graphcpp\\graph\\Menu.cpp",
               "RelativeToolTip": "graph\\Menu.cpp",
-              "ViewState": "AgIAAIEAAAAAAAAAAAAwwKMAAAAcAAAAAAAAAA==",
+              "ViewState": "AgIAAIQAAAAAAAAAAAAwwKMAAAAcAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-10-05T15:44:05.693Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-10-05T15:44:05.693Z"
             },
             {
               "$type": "Document",
@@ -110,8 +109,7 @@
               "RelativeToolTip": "graph\\graph.cpp",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAYAAAAMAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
-              "WhenOpened": "2024-09-30T02:09:53.846Z",
-              "EditorCaption": ""
+              "WhenOpened": "2024-09-30T02:09:53.846Z"
             }
           ]
         }
