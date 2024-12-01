@@ -9,6 +9,7 @@
 #include <fstream>
 #include <unordered_set>
 #include <queue>
+
 using namespace std;
 struct Edge {
     int to;        //конечная вершина
@@ -642,6 +643,78 @@ public:
         return validVertices;
     }
 
+    //вспомогательный метод для поиска пути в остаточной сети с использованием BFS
+    bool bfs(vector<vector<int>>& residualGraph, int source, int sink, vector<int>& parent) {
+        int n = residualGraph.size();
+        vector<bool> visited(n, false);
+
+        queue<int> q;
+        q.push(source);
+        visited[source] = true;
+        parent[source] = -1;
+
+        while (!q.empty()) {
+            int u = q.front();
+            q.pop();
+
+            for (int v = 0; v < n; ++v) {
+                if (!visited[v] && residualGraph[u][v] > 0) {
+                    q.push(v);
+                    parent[v] = u;
+                    visited[v] = true;
+
+                    if (v == sink) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    int fordFulkerson(const string& u, const string& v) {
+        if (nameToIndex.find(u) == nameToIndex.end() || nameToIndex.find(v) == nameToIndex.end()) {
+            throw runtime_error("Начальная вершина или конечная вершина не найдена!");
+        }
+
+        int source = nameToIndex[u];
+        int sink = nameToIndex[v];
+
+        int n = numVertices;
+        vector<vector<int>> residualGraph(n, vector<int>(n, 0)); //матрица остаточной сети nxn (n-кол-во вершин)
+
+        //строим остаточную сеть из списка смежности графа
+        for (int u = 0; u < n; ++u) {
+            for (const Edge& edge : adjList[u]) {
+                residualGraph[u][edge.to] = edge.weight;
+            }
+        }
+
+        vector<int> parent(n);
+        int maxFlow = 0;
+
+        //пока существует путь от source до sink в остаточной сети
+        while (bfs(residualGraph, source, sink, parent)) {
+            //находим минимальную пропускную способность ребра на пути, найденном BFS
+            int pathFlow = numeric_limits<int>::max();
+            for (int v = sink; v != source; v = parent[v]) {
+                int u = parent[v];
+                pathFlow = min(pathFlow, residualGraph[u][v]);
+            }
+
+            //обновляем остаточную сеть
+            for (int v = sink; v != source; v = parent[v]) {
+                int u = parent[v];
+                residualGraph[u][v] -= pathFlow;
+                residualGraph[v][u] += pathFlow;
+            }
+
+            maxFlow += pathFlow;
+        }
+
+        return maxFlow;
+    }
 };
 
 #endif  // GRAPH_H

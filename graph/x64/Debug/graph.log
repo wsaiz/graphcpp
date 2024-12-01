@@ -1,33 +1,39 @@
 ﻿  Menu.cpp
-C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(264,23): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
-  (компиляция исходного файла "Menu.cpp")
-  
-C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(324,25): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(265,23): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   (компиляция исходного файла "Menu.cpp")
   
 C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(325,25): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   (компиляция исходного файла "Menu.cpp")
   
-C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(360,36): warning C4267: +=: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(326,25): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   (компиляция исходного файла "Menu.cpp")
   
-C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(521,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(361,36): warning C4267: +=: преобразование из "size_t" в "int"; возможна потеря данных
+  (компиляция исходного файла "Menu.cpp")
+  
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(522,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  (компиляция исходного файла "Menu.cpp")
+  
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(648,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   (компиляция исходного файла "Menu.cpp")
   
   graph.cpp
-C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(264,23): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
-  (компиляция исходного файла "graph.cpp")
-  
-C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(324,25): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(265,23): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   (компиляция исходного файла "graph.cpp")
   
 C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(325,25): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   (компиляция исходного файла "graph.cpp")
   
-C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(360,36): warning C4267: +=: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(326,25): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   (компиляция исходного файла "graph.cpp")
   
-C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(521,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(361,36): warning C4267: +=: преобразование из "size_t" в "int"; возможна потеря данных
+  (компиляция исходного файла "graph.cpp")
+  
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(522,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
+  (компиляция исходного файла "graph.cpp")
+  
+C:\Users\wsaiz\Documents\GitHub\graphcpp\graph\Graph.h(648,15): warning C4267: инициализация: преобразование из "size_t" в "int"; возможна потеря данных
   (компиляция исходного файла "graph.cpp")
   
   Создание кода...

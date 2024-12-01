@@ -1,0 +1,10 @@
+Directed
+S A 16
+S B 13
+A B 10
+A C 12
+B A 4
+B D 14
+C T 20
+D T 7
+C B 7

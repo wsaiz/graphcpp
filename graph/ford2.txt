@@ -1,0 +1,7 @@
+Directed
+S A 10
+S B 10
+A C 4
+B C 6
+A T 8
+C T 10

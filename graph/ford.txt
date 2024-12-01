@@ -1,0 +1,6 @@
+Directed
+A B 6
+A C 2
+C B 3
+B D 4
+C D 6
