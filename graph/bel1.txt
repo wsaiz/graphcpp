@@ -1,0 +1,5 @@
+Directed
+A B 2
+A C 3
+B C 1
+C A 4

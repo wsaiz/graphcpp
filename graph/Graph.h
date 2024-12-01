@@ -443,9 +443,7 @@ public:
         }
         cout << "Общий вес остовного дерева: " << totalWeight << endl;
     }
-
-    //метод для поиска кратчайшего пути из вершины u до вершины v с использованием алгоритма Беллмана-Форда
-    void findShortestPathBellmanFord(const string& u, const string& v) {
+    void findShortestPathDijkstra(const string& u, const string& v) {
         if (nameToIndex.find(u) == nameToIndex.end() || nameToIndex.find(v) == nameToIndex.end()) {
             cout << "Одна или обе вершины не существуют!" << endl;
             return;
@@ -457,32 +455,34 @@ public:
         vector<int> distance(numVertices, INT_MAX); //минимальные расстояния до каждой вершины
         vector<int> predecessor(numVertices, -1);   //предшественники для восстановления пути
 
-        distance[start] = 0; //расстояние до начальной вершины равно 0
+        //приоритетная очередь для выбора вершины с минимальным расстоянием
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<>> pq;
 
-        //основной цикл алгоритма Беллмана-Форда
-        for (int i = 0; i < numVertices - 1; ++i) {
-            for (int u = 0; u < numVertices; ++u) {
-                for (const Edge& edge : adjList[u]) {
-                    int v = edge.to;
-                    int weight = edge.weight;
+        //инициализация начальной вершины
+        distance[start] = 0;
+        pq.emplace(0, start); //(расстояние, вершина)
 
-                    //если найдено более короткое расстояние, обновляем его
-                    if (distance[u] != INT_MAX && distance[u] + weight < distance[v]) {
-                        distance[v] = distance[u] + weight;
-                        predecessor[v] = u;
-                    }
-                }
-            }
-        }
+        while (!pq.empty()) {
+            //получаем пару (расстояние, вершина) из очереди
+            pair<int, int> top = pq.top();
+            pq.pop();
 
-        //проверка на наличие отрицательного цикла
-        for (int u = 0; u < numVertices; ++u) {
+            int dist = top.first;
+            int u = top.second;
+
+            //если расстояние из очереди больше текущего, пропускаем
+            if (dist > distance[u]) continue;
+
+            //рассматриваем всех соседей текущей вершины
             for (const Edge& edge : adjList[u]) {
                 int v = edge.to;
                 int weight = edge.weight;
-                if (distance[u] != INT_MAX && distance[u] + weight < distance[v]) {
-                    cout << "Граф содержит отрицательный цикл!" << endl;
-                    return;
+
+                //если найден более короткий путь, обновляем
+                if (distance[u] + weight < distance[v]) {
+                    distance[v] = distance[u] + weight;
+                    predecessor[v] = u;
+                    pq.emplace(distance[v], v); //добавляем обновлённое расстояние в очередь
                 }
             }
         }
@@ -508,6 +508,8 @@ public:
         cout << endl;
         cout << "Длина пути: " << distance[end] << endl;
     }
+
+
     //определить, существует ли путь длиной не более L между двумя заданными вершинами графа с помощью алгоритма Флойда — Уоршелла
     void findPathWithinL(const string& startName, const string& endName, int L) {
         //проверяем, существуют ли начальная и конечная вершины
@@ -696,14 +698,14 @@ public:
 
         //пока существует путь от source до sink в остаточной сети
         while (bfs(residualGraph, source, sink, parent)) {
-            //находим минимальную пропускную способность ребра на пути, найденном BFS
+            // Находим минимальный поток на найденном пути
             int pathFlow = numeric_limits<int>::max();
             for (int v = sink; v != source; v = parent[v]) {
                 int u = parent[v];
                 pathFlow = min(pathFlow, residualGraph[u][v]);
             }
 
-            //обновляем остаточную сеть
+            // Обновляем остаточную сеть
             for (int v = sink; v != source; v = parent[v]) {
                 int u = parent[v];
                 residualGraph[u][v] -= pathFlow;
@@ -711,7 +713,17 @@ public:
             }
 
             maxFlow += pathFlow;
+
+            // Добавляем вывод остаточной сети здесь
+            cout << "Остаточный граф после итерации" << endl;
+            for (int i = 0; i < n; ++i) {
+                for (int j = 0; j < n; ++j) {
+                    cout << residualGraph[i][j] << " ";
+                }
+                cout << endl;
+            }
         }
+
 
         return maxFlow;
     }
