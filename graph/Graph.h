@@ -9,7 +9,8 @@
 #include <fstream>
 #include <unordered_set>
 #include <queue>
-
+#include <SFML/Graphics.hpp>
+#include <random>
 using namespace std;
 struct Edge {
     int to;        //конечная вершина
@@ -82,26 +83,46 @@ public:
     }
     //метод для добавления вершины
     void addVertex(const string& name) {
-        if (nameToIndex.find(name) == nameToIndex.end()) { //проверка на существование вершины с таким же именем
-            nameToIndex[name] = numVertices; //добавляем в nameToIndex (связка с текущим числом вершин) для доступа к индексу вершины по ее имени
-            indexToName[numVertices] = name; //индекс связывается с именем вершины 
-            adjList.push_back(vector<Edge>()); //добавляем новый список ребер для вершины
-            ++numVertices; //увеличиваем число вершин
+        if (nameToIndex.find(name) != nameToIndex.end()) {
+            return; // Если вершина уже существует, ничего не делаем
         }
+        nameToIndex[name] = numVertices;
+        indexToName[numVertices] = name;
+        adjList.push_back(vector<Edge>());
+        ++numVertices;
     }
+
+
 
     //метод для добавления ребра
     void addEdge(const string& from, const string& to, int weight) {
-        addVertex(from); //проверяем существуют ли вершины, между которыми можно построить ребро
-        addVertex(to);
-        int u = nameToIndex[from]; //находим индексы вершин в хэш-таблице
-        int v = nameToIndex[to];
-        adjList[u].push_back(Edge(v, weight)); //добавляем ребро в список смежности
+        // Добавляем вершины только если они еще не существуют
+        if (nameToIndex.find(from) == nameToIndex.end()) {
+            addVertex(from);
+        }
+        if (nameToIndex.find(to) == nameToIndex.end()) {
+            addVertex(to);
+        }
 
-        if (!directed) { //если граф неориентированный, то добавляем обратное ребро
+        int u = nameToIndex[from];
+        int v = nameToIndex[to];
+
+        // Проверка на существующее ребро
+        for (const Edge& edge : adjList[u]) {
+            if (edge.to == v && edge.weight == weight) {
+                cout << "Ошибка: Ребро между \"" << from << "\" и \"" << to
+                    << "\" с весом " << weight << " уже существует." << endl;
+                return;
+            }
+        }
+
+        // Добавляем ребро
+        adjList[u].push_back(Edge(v, weight));
+        if (!directed) {
             adjList[v].push_back(Edge(u, weight));
         }
     }
+
     //метод для удаления вершины
     void removeVertex(const string& name) { //проверка на существование вершины
         if (nameToIndex.find(name) == nameToIndex.end()) {
@@ -268,14 +289,17 @@ public:
     }
 
     Graph reverseGraph() const {
-        Graph reversedGraph(true); //новый граф должен быть ориентированным
+        Graph reversedGraph(true); // Новый граф должен быть ориентированным
 
-        for (int i = 0; i < numVertices; ++i) { //добавляем обратные ребра в новый граф
+        for (int i = 0; i < numVertices; ++i) { // Добавляем обратные ребра в новый граф
             for (const Edge& edge : adjList[i]) {
                 reversedGraph.addEdge(indexToName.at(edge.to), indexToName.at(i), edge.weight);
             }
         }
-        return reversedGraph;  
+
+        cout << "Граф загружен в файл reversed_graph.txt";
+        reversedGraph.saveToFile("reversed_graph.txt");
+        return reversedGraph;
     }
 
     //5-6 task
@@ -727,6 +751,233 @@ public:
 
         return maxFlow;
     }
+
+
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////VISUALIZATION//////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    int getNumVertices() const {
+        return numVertices;
+    }
+    string getVertexName(int index) const {
+        if (index >= 0 && index < numVertices) {
+            return indexToName.at(index);
+        }
+        throw runtime_error("Некорректный индекс вершины");
+    }
+    const vector<Edge>& getAdjList(int index) const {
+        if (index >= 0 && index < numVertices) {
+            return adjList[index];
+        }
+        throw runtime_error("Некорректный индекс вершины");
+    }
+    void visualizeGraph(Graph& graph) {
+        sf::RenderWindow window(sf::VideoMode(1000, 800), "Graph Visualization");
+
+        std::unordered_map<int, sf::CircleShape> vertexShapes;
+        std::unordered_map<int, sf::Text> vertexLabels;
+        std::unordered_map<int, sf::Vector2f> vertexPositions;
+
+       
+        sf::Font font;
+        if (!font.loadFromFile("arial.ttf")) {
+            std::cerr << "Не удалось загрузить шрифт!" << std::endl;
+            return;
+        }
+
+       
+        float angleIncrement = 360.0f / graph.getNumVertices();
+        float radius = 300.0f; 
+
+        for (int i = 0; i < graph.getNumVertices(); ++i) {
+           
+            float angle = i * angleIncrement;
+            float x = 500 + radius * cos(angle * 3.14f / 180);
+            float y = 400 + radius * sin(angle * 3.14f / 180);
+
+            sf::CircleShape vertex(30); 
+            vertex.setFillColor(sf::Color::Green);
+            vertex.setPosition(x - 30, y - 30); 
+            vertexShapes[i] = vertex;
+            vertexPositions[i] = sf::Vector2f(x, y); 
+
+            
+            sf::Text label;
+            label.setFont(font);
+            label.setString(graph.getVertexName(i));
+            label.setCharacterSize(18);
+            label.setFillColor(sf::Color::Black);
+
+            
+            sf::FloatRect textBounds = label.getLocalBounds();
+            label.setPosition(x - textBounds.width / 2, y - textBounds.height / 2);
+
+            vertexLabels[i] = label;
+        }
+
+        
+        std::vector<std::pair<sf::VertexArray, sf::Text>> edges;
+
+        
+         
+        std::vector<sf::ConvexShape> arrows;                   
+
+        auto updateEdges = [&]() {
+            edges.clear();  
+            arrows.clear(); 
+
+            for (int u = 0; u < graph.getNumVertices(); ++u) {
+                for (const Edge& edge : graph.getAdjList(u)) {
+                    int v = edge.to;
+                    if (!graph.isDirected() && u > v) {
+                        continue;
+                    }
+                    
+                    sf::VertexArray line(sf::Lines, 2);
+                    line[0].position = vertexShapes[u].getPosition() + sf::Vector2f(30, 30);
+                    line[1].position = vertexShapes[v].getPosition() + sf::Vector2f(30, 30);
+                    line[0].color = sf::Color::Black;
+                    line[1].color = sf::Color::Black;
+
+                    
+                    sf::Text weightLabel;
+                    weightLabel.setFont(font);
+                    weightLabel.setString(std::to_string(edge.weight));
+                    weightLabel.setCharacterSize(18);
+                    weightLabel.setFillColor(sf::Color::Red);
+
+                    
+                    sf::Vector2f mid = (line[0].position + line[1].position) / 2.0f;
+
+                    
+                    sf::Vector2f direction = line[1].position - line[0].position;
+                    float length = sqrt(direction.x * direction.x + direction.y * direction.y);
+                    sf::Vector2f unitDirection = direction / length;
+
+                    
+                    sf::Vector2f offset(-unitDirection.y, unitDirection.x); 
+                    float offsetDistance = 10.0f; 
+                    mid += offset * offsetDistance;
+
+                   
+                    weightLabel.setPosition(mid.x - 10, mid.y - 10);
+
+                    
+                    edges.push_back({ line, weightLabel });
+
+                    
+                    if (graph.isDirected()) {
+                        sf::ConvexShape arrowhead;
+                        arrowhead.setPointCount(3);
+
+                        
+                        sf::Vector2f arrowPosition = line[1].position - unitDirection * 20.0f; 
+                        float angle = atan2(direction.y, direction.x) * 180.0f / 3.14159265f;
+
+                        
+                        arrowhead.setPoint(0, sf::Vector2f(0, 0));                        
+                        arrowhead.setPoint(1, sf::Vector2f(-10.0f, -5.0f));              
+                        arrowhead.setPoint(2, sf::Vector2f(-10.0f, 5.0f));               
+                        arrowhead.setPosition(arrowPosition);                            
+                        arrowhead.setRotation(angle);                                    
+                        arrowhead.setFillColor(sf::Color::Black);
+
+                        
+                        arrows.push_back(arrowhead);
+                    }
+                }
+            }
+            };
+
+        updateEdges(); 
+
+       
+        bool isDragging = false;
+        int draggedVertex = -1;
+        sf::Vector2f offset;
+
+        while (window.isOpen()) {
+            sf::Event event;
+            while (window.pollEvent(event)) {
+                if (event.type == sf::Event::Closed) {
+                    window.close();
+                }
+
+                if (event.type == sf::Event::MouseButtonPressed) {
+                    
+                    for (int i = 0; i < graph.getNumVertices(); ++i) {
+                        sf::FloatRect vertexBounds = vertexShapes[i].getGlobalBounds();
+                        if (vertexBounds.contains(event.mouseButton.x, event.mouseButton.y)) {
+                            isDragging = true;
+                            draggedVertex = i;
+                            offset = vertexShapes[i].getPosition() - sf::Vector2f(event.mouseButton.x, event.mouseButton.y);
+                            break;
+                        }
+                    }
+                }
+
+                if (event.type == sf::Event::MouseButtonReleased) {
+                    isDragging = false;
+                    draggedVertex = -1;
+                }
+
+                if (event.type == sf::Event::MouseMoved && isDragging) {
+                    
+                    if (draggedVertex != -1) {
+                        sf::Vector2f newPos(event.mouseMove.x, event.mouseMove.y);
+                        vertexShapes[draggedVertex].setPosition(newPos + offset);  
+                        vertexPositions[draggedVertex] = newPos;
+
+                        
+                        sf::FloatRect textBounds = vertexLabels[draggedVertex].getLocalBounds();
+                        vertexLabels[draggedVertex].setPosition(newPos.x - textBounds.width / 2, newPos.y - textBounds.height / 2);
+
+                        
+                        updateEdges();
+                    }
+                }
+            }
+
+            window.clear(sf::Color::White);
+
+            
+            for (const auto& edge : edges) {
+                window.draw(edge.first);
+                window.draw(edge.second); 
+            }
+
+            
+            for (const auto& [index, shape] : vertexShapes) {
+                window.draw(shape);
+            }
+
+            
+            for (const auto& [index, label] : vertexLabels) {
+                window.draw(label);
+            }
+            for (const auto& arrow : arrows) {
+                window.draw(arrow);
+            }
+            window.display();
+        }
+    }
+
+
+    ////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////
 };
 
 #endif  // GRAPH_H

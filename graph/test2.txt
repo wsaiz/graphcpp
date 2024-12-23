@@ -1,6 +1,5 @@
-Undirected
-A B 4
-B C -5
-C A 2
-A D 3
-D C 1
+Directed
+S A 1
+A B -1
+B C -1
+C A -1
